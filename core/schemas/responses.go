@@ -2348,7 +2348,7 @@ func (action *ResponsesToolMessageActionStruct) UnmarshalJSON(data []byte) error
 		action.ResponsesMCPApprovalRequestAction = &mcpApprovalRequestAction
 		return nil
 
-	case "search", "open_page", "find":
+	case "search", "open_page", "find", "find_in_page":
 		var webSearchToolCallAction ResponsesWebSearchToolCallAction
 		if err := Unmarshal(data, &webSearchToolCallAction); err != nil {
 			return fmt.Errorf("failed to unmarshal web search tool call action: %w", err)

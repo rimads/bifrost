@@ -483,3 +483,22 @@ func TestResponsesToolImageGenerationAction(t *testing.T) {
 	require.NoError(t, err)
 	assert.JSONEq(t, def, string(out))
 }
+
+// TestResponsesWebSearchCallFindInPageRoundTrip: OpenAI names the in-page find
+// action "find_in_page"; it must decode as a web search action, not a computer one.
+func TestResponsesWebSearchCallFindInPageRoundTrip(t *testing.T) {
+	const item = `{"id":"ws_1","type":"web_search_call","status":"completed","action":{"type":"find_in_page","url":"https://example.com/a","pattern":"needle"}}`
+
+	var msg ResponsesMessage
+	require.NoError(t, Unmarshal([]byte(item), &msg))
+
+	require.NotNil(t, msg.ResponsesToolMessage)
+	action := msg.ResponsesToolMessage.Action
+	require.NotNil(t, action)
+	require.NotNil(t, action.ResponsesWebSearchToolCallAction, "find_in_page must decode as a web search action")
+	assert.Equal(t, "find_in_page", action.ResponsesWebSearchToolCallAction.Type)
+
+	out, err := MarshalSorted(msg)
+	require.NoError(t, err)
+	assert.JSONEq(t, item, string(out))
+}
